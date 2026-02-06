@@ -11,9 +11,6 @@ Features secure user authentication, real-time messaging, group chats, and notif
 
 **Database:** Mongo DB
   
-## Screenshots
-
-![](https://github.com/mrrobot0412/socket_chat_app/blob/master/screenshots/group%20%2B%20notif.PNG)
 ## Run Locally
 
 Clone the project
@@ -55,23 +52,16 @@ Start the Client
   
 # Features
 
-### Authenticaton
-![](https://github.com/mrrobot0412/socket_chat_app/blob/master/screenshots/login.PNG)
-![](https://github.com/mrrobot0412/socket_chat_app/blob/master/screenshots/signup.PNG)
-### Real Time Chatting with Typing indicators
-![](https://github.com/mrrobot0412/socket_chat_app/blob/master/screenshots/real-time.PNG)
-### One to One chat
-![](https://github.com/mrrobot0412/socket_chat_app/blob/master/screenshots/mainscreen.PNG)
-### Search Users
-![](https://github.com/mrrobot0412/socket_chat_app/blob/master/screenshots/search.PNG)
-### Create Group Chats
-![](https://github.com/mrrobot0412/socket_chat_app/blob/master/screenshots/new%20grp.PNG)
-### Notifications 
-![](https://github.com/mrrobot0412/socket_chat_app/blob/master/screenshots/group%20%2B%20notif.PNG)
-### Add or Remove users from group
-![](https://github.com/mrrobot0412/socket_chat_app/blob/master/screenshots/add%20rem.PNG)
-### View Other user Profile
-![](https://github.com/mrrobot0412/socket_chat_app/blob/master/screenshots/profile.PNG)
+- Real-time messaging with Socket.io
+- User authentication and authorization
+- One-to-one chat
+- Group chat functionality
+- Search users
+- Notifications
+- Add/remove users from groups
+- View user profiles
+- Typing indicators
+
 ## Author
 
 - [@mrrobot0412](https://github.com/mrrobot0412)

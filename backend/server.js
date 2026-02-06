@@ -1,18 +1,20 @@
 const express = require("express");
-const connectDB = require("./config/db");
 const dotenv = require("dotenv");
+
+const connectDB = require("./config/db");
+
 const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const path = require("path");
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../.env") });
 connectDB();
 const app = express();
 
 app.use(express.json()); // to accept json data
-
+console.log("MONGO URI IS:", process.env.MONGO_URI);
 // app.get("/", (req, res) => {
 //   res.send("API Running!");
 // });

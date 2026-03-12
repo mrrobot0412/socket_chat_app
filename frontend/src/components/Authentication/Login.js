@@ -71,52 +71,129 @@ const Login = () => {
   };
 
   return (
-    <VStack spacing="10px">
+    <VStack spacing={6}>
       <FormControl id="email" isRequired>
-        <FormLabel>Email Address</FormLabel>
+        <FormLabel
+          fontWeight="600"
+          color="gray.700"
+          fontSize="sm"
+          mb={3}
+        >
+          Email Address
+        </FormLabel>
         <Input
           value={email}
           type="email"
-          placeholder="Enter Your Email Address"
+          placeholder="Enter your email address"
+          size="lg"
+          variant="filled"
+          bg="gray.50"
+          border="2px solid transparent"
+          borderRadius="12px"
+          _hover={{
+            bg: "gray.100",
+            borderColor: "blue.200",
+          }}
+          _focus={{
+            bg: "white",
+            borderColor: "blue.500",
+            boxShadow: "0 0 0 1px #3182ce",
+          }}
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormControl>
+
       <FormControl id="password" isRequired>
-        <FormLabel>Password</FormLabel>
-        <InputGroup size="md">
+        <FormLabel
+          fontWeight="600"
+          color="gray.700"
+          fontSize="sm"
+          mb={3}
+        >
+          Password
+        </FormLabel>
+        <InputGroup size="lg">
           <Input
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             type={show ? "text" : "password"}
-            placeholder="Enter password"
+            placeholder="Enter your password"
+            variant="filled"
+            bg="gray.50"
+            border="2px solid transparent"
+            borderRadius="12px"
+            _hover={{
+              bg: "gray.100",
+              borderColor: "blue.200",
+            }}
+            _focus={{
+              bg: "white",
+              borderColor: "blue.500",
+              boxShadow: "0 0 0 1px #3182ce",
+            }}
           />
           <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClick}>
+            <Button
+              h="1.75rem"
+              size="sm"
+              onClick={handleClick}
+              variant="ghost"
+              color="gray.600"
+              _hover={{
+                bg: "gray.200",
+              }}
+            >
               {show ? "Hide" : "Show"}
             </Button>
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <Button
-        colorScheme="blue"
-        width="100%"
-        style={{ marginTop: 15 }}
-        onClick={submitHandler}
-        isLoading={loading}
-      >
-        Login
-      </Button>
-      <Button
-        variant="solid"
-        colorScheme="red"
-        width="100%"
-        onClick={() => {
-          setEmail("guest@example.com");
-          setPassword("123456");
-        }}
-      >
-        Get Guest User Credentials
-      </Button>
+
+      <VStack spacing={4} w="100%" pt={2}>
+        <Button
+          colorScheme="blue"
+          width="100%"
+          size="lg"
+          height="12"
+          fontSize="md"
+          fontWeight="600"
+          borderRadius="12px"
+          onClick={submitHandler}
+          isLoading={loading}
+          loadingText="Signing in..."
+          _hover={{
+            transform: "translateY(-1px)",
+            boxShadow: "lg",
+          }}
+          transition="all 0.2s"
+        >
+          Sign In
+        </Button>
+
+        <Button
+          variant="outline"
+          colorScheme="gray"
+          width="100%"
+          size="lg"
+          height="12"
+          fontSize="md"
+          fontWeight="500"
+          borderRadius="12px"
+          borderWidth="2px"
+          _hover={{
+            bg: "gray.50",
+            transform: "translateY(-1px)",
+            boxShadow: "md",
+          }}
+          transition="all 0.2s"
+          onClick={() => {
+            setEmail("guest@example.com");
+            setPassword("123456");
+          }}
+        >
+          Try as Guest
+        </Button>
+      </VStack>
     </VStack>
   );
 };

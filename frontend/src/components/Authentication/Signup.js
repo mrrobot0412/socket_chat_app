@@ -6,12 +6,14 @@ import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useState } from "react";
 import { useHistory } from "react-router";
+import { ChatState } from "../../Context/ChatProvider";
 
 const Signup = () => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
   const toast = useToast();
   const history = useHistory();
+  const { setUser } = ChatState();
 
   const [name, setName] = useState();
   const [email, setEmail] = useState();
@@ -68,6 +70,7 @@ const Signup = () => {
         isClosable: true,
         position: "bottom",
       });
+      setUser(data); // Add this line to update context
       localStorage.setItem("userInfo", JSON.stringify(data));
       setPicLoading(false);
       history.push("/chats");
@@ -130,69 +133,206 @@ const Signup = () => {
   };
 
   return (
-    <VStack spacing="5px">
+    <VStack spacing={5}>
       <FormControl id="first-name" isRequired>
-        <FormLabel>Name</FormLabel>
+        <FormLabel
+          fontWeight="600"
+          color="gray.700"
+          fontSize="sm"
+          mb={3}
+        >
+          Full Name
+        </FormLabel>
         <Input
-          placeholder="Enter Your Name"
+          placeholder="Enter your full name"
+          size="lg"
+          variant="filled"
+          bg="gray.50"
+          border="2px solid transparent"
+          borderRadius="12px"
+          _hover={{
+            bg: "gray.100",
+            borderColor: "blue.200",
+          }}
+          _focus={{
+            bg: "white",
+            borderColor: "blue.500",
+            boxShadow: "0 0 0 1px #3182ce",
+          }}
           onChange={(e) => setName(e.target.value)}
         />
       </FormControl>
+
       <FormControl id="email" isRequired>
-        <FormLabel>Email Address</FormLabel>
+        <FormLabel
+          fontWeight="600"
+          color="gray.700"
+          fontSize="sm"
+          mb={3}
+        >
+          Email Address
+        </FormLabel>
         <Input
           type="email"
-          placeholder="Enter Your Email Address"
+          placeholder="Enter your email address"
+          size="lg"
+          variant="filled"
+          bg="gray.50"
+          border="2px solid transparent"
+          borderRadius="12px"
+          _hover={{
+            bg: "gray.100",
+            borderColor: "blue.200",
+          }}
+          _focus={{
+            bg: "white",
+            borderColor: "blue.500",
+            boxShadow: "0 0 0 1px #3182ce",
+          }}
           onChange={(e) => setEmail(e.target.value)}
         />
       </FormControl>
+
       <FormControl id="password" isRequired>
-        <FormLabel>Password</FormLabel>
-        <InputGroup size="md">
+        <FormLabel
+          fontWeight="600"
+          color="gray.700"
+          fontSize="sm"
+          mb={3}
+        >
+          Password
+        </FormLabel>
+        <InputGroup size="lg">
           <Input
             type={show ? "text" : "password"}
-            placeholder="Enter Password"
+            placeholder="Create a password"
+            variant="filled"
+            bg="gray.50"
+            border="2px solid transparent"
+            borderRadius="12px"
+            _hover={{
+              bg: "gray.100",
+              borderColor: "blue.200",
+            }}
+            _focus={{
+              bg: "white",
+              borderColor: "blue.500",
+              boxShadow: "0 0 0 1px #3182ce",
+            }}
             onChange={(e) => setPassword(e.target.value)}
           />
           <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClick}>
+            <Button
+              h="1.75rem"
+              size="sm"
+              onClick={handleClick}
+              variant="ghost"
+              color="gray.600"
+              _hover={{
+                bg: "gray.200",
+              }}
+            >
               {show ? "Hide" : "Show"}
             </Button>
           </InputRightElement>
         </InputGroup>
       </FormControl>
-      <FormControl id="password" isRequired>
-        <FormLabel>Confirm Password</FormLabel>
-        <InputGroup size="md">
+
+      <FormControl id="confirm-password" isRequired>
+        <FormLabel
+          fontWeight="600"
+          color="gray.700"
+          fontSize="sm"
+          mb={3}
+        >
+          Confirm Password
+        </FormLabel>
+        <InputGroup size="lg">
           <Input
             type={show ? "text" : "password"}
-            placeholder="Confirm password"
+            placeholder="Confirm your password"
+            variant="filled"
+            bg="gray.50"
+            border="2px solid transparent"
+            borderRadius="12px"
+            _hover={{
+              bg: "gray.100",
+              borderColor: "blue.200",
+            }}
+            _focus={{
+              bg: "white",
+              borderColor: "blue.500",
+              boxShadow: "0 0 0 1px #3182ce",
+            }}
             onChange={(e) => setConfirmpassword(e.target.value)}
           />
           <InputRightElement width="4.5rem">
-            <Button h="1.75rem" size="sm" onClick={handleClick}>
+            <Button
+              h="1.75rem"
+              size="sm"
+              onClick={handleClick}
+              variant="ghost"
+              color="gray.600"
+              _hover={{
+                bg: "gray.200",
+              }}
+            >
               {show ? "Hide" : "Show"}
             </Button>
           </InputRightElement>
         </InputGroup>
       </FormControl>
+
       <FormControl id="pic">
-        <FormLabel>Upload your Picture</FormLabel>
+        <FormLabel
+          fontWeight="600"
+          color="gray.700"
+          fontSize="sm"
+          mb={3}
+        >
+          Profile Picture (Optional)
+        </FormLabel>
         <Input
           type="file"
-          p={1.5}
+          p={2}
+          size="lg"
+          variant="filled"
+          bg="gray.50"
+          border="2px solid transparent"
+          borderRadius="12px"
+          _hover={{
+            bg: "gray.100",
+            borderColor: "blue.200",
+          }}
+          _focus={{
+            bg: "white",
+            borderColor: "blue.500",
+            boxShadow: "0 0 0 1px #3182ce",
+          }}
           accept="image/*"
           onChange={(e) => postDetails(e.target.files[0])}
         />
       </FormControl>
+
       <Button
         colorScheme="blue"
         width="100%"
-        style={{ marginTop: 15 }}
+        size="lg"
+        height="12"
+        fontSize="md"
+        fontWeight="600"
+        borderRadius="12px"
+        mt={4}
         onClick={submitHandler}
         isLoading={picLoading}
+        loadingText="Creating account..."
+        _hover={{
+          transform: "translateY(-1px)",
+          boxShadow: "lg",
+        }}
+        transition="all 0.2s"
       >
-        Sign Up
+        Create Account
       </Button>
     </VStack>
   );

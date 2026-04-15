@@ -63,7 +63,7 @@ function Homepage() {
                 color="gray.800"
                 letterSpacing="tight"
               >
-                ChatApp
+                Socket Chat
               </Text>
             </HStack>
             <Text

@@ -17,7 +17,10 @@ const MyChats = ({ fetchAgain }) => {
   const toast = useToast();
 
   const fetchChats = async () => {
-    // console.log(user._id);
+    if (!user?.token) {
+      return;
+    }
+
     try {
       const config = {
         headers: {
@@ -42,8 +45,8 @@ const MyChats = ({ fetchAgain }) => {
   useEffect(() => {
     setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
     fetchChats();
-    // eslint-disable-next-line
-  }, [fetchAgain]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fetchAgain, user]);
 
   return (
     <Box

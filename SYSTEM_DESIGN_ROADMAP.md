@@ -1,132 +1,77 @@
-# 🚀 ChatApp System Design Enhancement Roadmap
+# Socket Chat System Design Roadmap
 
-## Overview
-Transform your basic MERN chat app into a production-ready, scalable system that demonstrates enterprise-level system design principles. This roadmap outlines high-impact features that will make your project stand out on your resume.
+## Current Architecture
+- Frontend: React 17 + Chakra UI SPA
+- API: Node.js + Express
+- Data store: MongoDB with Mongoose
+- Real-time transport: Socket.IO
+- Auth: JWT bearer tokens
 
-## 🎯 Current Architecture
-- **Frontend**: React + Chakra UI
-- **Backend**: Node.js + Express
-- **Database**: MongoDB Atlas
-- **Real-time**: Socket.io
-- **Authentication**: JWT
+## Current Constraints
+- Single Node process for API and socket traffic
+- No rate limiting or request validation layer
+- No background jobs, cache, or queue
+- Minimal observability and no automated tests
+- Tight coupling between frontend deploy assumptions and backend runtime
 
-## 🏗️ System Design Enhancements
+## Target Production Architecture
 
-### 1. **Performance & Scalability**
-#### Rate Limiting & Throttling
-- API rate limiting (express-rate-limit)
-- Message throttling to prevent spam
-- Connection rate limiting for Socket.io
+### Edge
+- CDN for the built frontend
+- Reverse proxy or load balancer terminating TLS
+- API and socket traffic routed to the Node service
 
-#### Caching Layer
-- Redis for session management
-- Message caching for frequently accessed chats
-- User presence caching
+### Application Layer
+- Stateless Node.js API instances
+- Socket.IO scaled with a shared adapter when running multiple instances
+- Environment-based configuration for URLs, secrets, and third-party services
 
-#### Database Optimization
-- Message pagination with cursor-based pagination
-- Database indexing for queries
-- Connection pooling
+### Data Layer
+- MongoDB Atlas replica set
+- Indexes on `Chat.users`, `Message.chat`, and user lookup fields
+- Optional Redis for presence, rate limiting state, and socket fanout coordination
 
-### 2. **Security & Authentication**
-#### Enhanced Security
-- Input validation & sanitization
-- XSS protection
-- CORS configuration
-- Helmet.js for security headers
+## Backend Hardening Phases
 
-#### Advanced Auth
-- Refresh token rotation
-- Password strength validation
-- Account lockout after failed attempts
-- Email verification
+### Phase 1: Security Baseline
+- Enforce membership checks on chat and message operations
+- Enforce group-admin authorization for group updates
+- Move all secrets to environment variables and rotate compromised credentials
+- Add request validation for auth, chat creation, and message payloads
+- Add rate limiting and security headers
 
-### 3. **Monitoring & Observability**
-#### Logging System
-- Winston for structured logging
-- Request/response logging
-- Error tracking and alerting
+### Phase 2: Reliability
+- Add health endpoints for API and database readiness
+- Introduce structured application logging
+- Separate operational errors from programmer errors
+- Add graceful shutdown handling for HTTP and socket connections
 
-#### Health Checks
-- API health endpoints
-- Database connection monitoring
-- Real-time connection status
+### Phase 3: Scale
+- Paginate messages instead of loading full histories
+- Add Redis-backed Socket.IO adapter for horizontal scaling
+- Add query indexes and measure slow endpoints
+- Offload media handling and heavy notifications to background jobs
 
-### 4. **Message Features**
-#### Advanced Messaging
-- Message delivery status (sent/delivered/read)
-- Message reactions and replies
-- File upload with size limits
-- Message search functionality
+## Frontend Roadmap
+- Replace hardcoded service endpoints with environment-driven config
+- Improve responsive chat layout for mobile and tablet
+- Add loading, empty, and error states across chat discovery and chat detail flows
+- Reduce socket listener duplication and stale state updates
+- Add basic component and interaction tests
 
-#### Real-time Enhancements
-- Typing indicators
-- Online/offline status
-- Last seen timestamps
-- Push notifications (web push)
+## Production Readiness Checklist
+- Secrets rotated and removed from tracked files
+- `.env.example` kept current
+- Frontend build passes
+- Backend syntax and smoke checks pass
+- CORS restricted to deployed frontend origin
+- Logging and health endpoints available
+- Error monitoring added
+- Deployment guide documented
 
-### 5. **DevOps & Infrastructure**
-#### Containerization
-- Docker setup for development
-- Docker Compose for multi-service setup
-- Production-ready Dockerfile
-
-#### API Documentation
-- Swagger/OpenAPI documentation
-- Postman collection
-- API versioning strategy
-
-### 6. **Testing & Quality**
-#### Testing Strategy
-- Unit tests (Jest)
-- Integration tests
-- API endpoint testing
-- Socket.io connection testing
-
-#### Code Quality
-- ESLint configuration
-- Prettier formatting
-- Husky pre-commit hooks
-- GitHub Actions CI/CD
-
-## 📊 Implementation Priority
-
-### **Phase 1: Foundation (Week 1)**
-1. Rate limiting
-2. Input validation
-3. Error handling middleware
-4. Basic logging
-
-### **Phase 2: Performance (Week 2)**
-1. Redis caching
-2. Message pagination
-3. Database optimization
-4. Connection pooling
-
-### **Phase 3: Features (Week 3)**
-1. Message status tracking
-2. File upload system
-3. Advanced real-time features
-4. Search functionality
-
-### **Phase 4: Production (Week 4)**
-1. Docker containerization
-2. API documentation
-3. Testing suite
-4. Monitoring setup
-
-## 🎯 Resume Impact
-Each feature demonstrates:
-- **System Design**: Scalability, performance, security
-- **Production Readiness**: Monitoring, testing, documentation
-- **Best Practices**: Clean code, proper architecture
-- **Modern Tech Stack**: Latest tools and patterns
-
-## 🚀 Getting Started
-Ready to begin? We'll start with a spec-driven approach to ensure proper planning and implementation.
-
-Choose your starting point:
-1. **Requirements-First**: Define business needs, then technical design
-2. **Design-First**: Start with technical architecture, then formalize requirements
-
-Which approach would you prefer for this system design enhancement project?
+## Recommended Next Additions
+- `helmet`, `cors`, and `express-rate-limit`
+- request validation with `zod` or `express-validator`
+- Jest + Supertest for backend integration tests
+- React Testing Library for critical frontend flows
+- Dockerfile and Compose setup for local parity

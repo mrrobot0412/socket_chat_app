@@ -77,7 +77,10 @@ function SideDrawer() {
         },
       };
 
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const { data } = await axios.get(
+        `/api/user?search=${encodeURIComponent(search)}`,
+        config
+      );
 
       setLoading(false);
       setSearchResult(data);
@@ -90,12 +93,11 @@ function SideDrawer() {
         isClosable: true,
         position: "bottom-left",
       });
+      setLoading(false);
     }
   };
 
   const accessChat = async (userId) => {
-    console.log(userId);
-
     try {
       setLoadingChat(true);
       const config = {
@@ -113,12 +115,13 @@ function SideDrawer() {
     } catch (error) {
       toast({
         title: "Error fetching the chat",
-        description: error.message,
+        description: error.response?.data?.message || error.message,
         status: "error",
         duration: 5000,
         isClosable: true,
         position: "bottom-left",
       });
+      setLoadingChat(false);
     }
   };
 
@@ -142,7 +145,7 @@ function SideDrawer() {
           </Button>
         </Tooltip>
         <Text fontSize="2xl" fontFamily="Work sans">
-          Talk-A-Tive
+          Socket Chat
         </Text>
         <div>
           <Menu>
@@ -160,7 +163,7 @@ function SideDrawer() {
                   key={notif._id}
                   onClick={() => {
                     setSelectedChat(notif.chat);
-                    setNotification(notification.filter((n) => n !== notif));
+                    setNotification(notification.filter((n) => n._id !== notif._id));
                   }}
                 >
                   {notif.chat.isGroupChat

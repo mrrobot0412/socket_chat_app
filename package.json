@@ -1,5 +1,5 @@
 {
-  "name": "chat-app",
+  "name": "socket-chat-app",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -10,9 +10,9 @@
   },
   "keywords": [
     "mern",
-    "chat-app"
+    "socket-chat-app"
   ],
-  "author": "Piyush Agarwal",
+  "author": "Maintainers",
   "license": "ISC",
   "dependencies": {
     "bcryptjs": "^2.4.3",

@@ -101,11 +101,27 @@ const Signup = () => {
     }
     console.log(pics);
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
+      const cloudName = process.env.REACT_APP_CLOUDINARY_CLOUD_NAME;
+      const uploadPreset = process.env.REACT_APP_CLOUDINARY_UPLOAD_PRESET;
+
+      if (!cloudName || !uploadPreset) {
+        toast({
+          title: "Image upload is not configured",
+          description: "Set Cloudinary environment variables before uploading avatars.",
+          status: "warning",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+        setPicLoading(false);
+        return;
+      }
+
       const data = new FormData();
       data.append("file", pics);
-      data.append("upload_preset", "chat-app");
-      data.append("cloud_name", "piyushproj");
-      fetch("https://api.cloudinary.com/v1_1/piyushproj/image/upload", {
+      data.append("upload_preset", uploadPreset);
+      data.append("cloud_name", cloudName);
+      fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
         method: "post",
         body: data,
       })

@@ -7,6 +7,8 @@ const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
+const { getUserFromToken } = require("./middleware/authMiddleware");
+const Chat = require("./models/chatModel");
 const path = require("path");
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
@@ -14,10 +16,7 @@ connectDB();
 const app = express();
 
 app.use(express.json()); // to accept json data
-console.log("MONGO URI IS:", process.env.MONGO_URI);
-// app.get("/", (req, res) => {
-//   res.send("API Running!");
-// });
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
@@ -45,7 +44,8 @@ if (process.env.NODE_ENV === "production") {
 app.use(notFound);
 app.use(errorHandler);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5000;
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:3000";
 
 const server = app.listen(
   PORT,
@@ -55,39 +55,87 @@ const server = app.listen(
 const io = require("socket.io")(server, {
   pingTimeout: 60000,
   cors: {
-    origin: "http://localhost:3000",
-    // credentials: true,
+    origin: CLIENT_URL,
   },
 });
 
-io.on("connection", (socket) => {
-  console.log("Connected to socket.io");
-  socket.on("setup", (userData) => {
-    socket.join(userData._id);
-    socket.emit("connected");
-  });
+io.use(async (socket, next) => {
+  try {
+    const token = socket.handshake.auth?.token;
 
-  socket.on("join chat", (room) => {
+    if (!token) {
+      return next(new Error("Unauthorized"));
+    }
+
+    const user = await getUserFromToken(token);
+
+    if (!user) {
+      return next(new Error("Unauthorized"));
+    }
+
+    socket.user = user;
+    next();
+  } catch (error) {
+    next(new Error("Unauthorized"));
+  }
+});
+
+io.on("connection", (socket) => {
+  socket.join(socket.user._id.toString());
+  socket.emit("connected");
+
+  socket.on("join chat", async (room) => {
+    const chat = await Chat.findOne({
+      _id: room,
+      users: { $elemMatch: { $eq: socket.user._id } },
+    }).select("_id");
+
+    if (!chat) {
+      socket.emit("socket error", "Unauthorized chat access");
+      return;
+    }
+
     socket.join(room);
-    console.log("User Joined Room: " + room);
   });
-  socket.on("typing", (room) => socket.in(room).emit("typing"));
-  socket.on("stop typing", (room) => socket.in(room).emit("stop typing"));
+  socket.on("typing", async (room) => {
+    const chat = await Chat.findOne({
+      _id: room,
+      users: { $elemMatch: { $eq: socket.user._id } },
+    }).select("_id");
+
+    if (chat) {
+      socket.in(room).emit("typing");
+    }
+  });
+  socket.on("stop typing", async (room) => {
+    const chat = await Chat.findOne({
+      _id: room,
+      users: { $elemMatch: { $eq: socket.user._id } },
+    }).select("_id");
+
+    if (chat) {
+      socket.in(room).emit("stop typing");
+    }
+  });
 
   socket.on("new message", (newMessageRecieved) => {
-    var chat = newMessageRecieved.chat;
+    const chat = newMessageRecieved.chat;
 
     if (!chat.users) return console.log("chat.users not defined");
 
+    if (newMessageRecieved.sender._id !== socket.user._id.toString()) {
+      socket.emit("socket error", "Unauthorized message event");
+      return;
+    }
+
     chat.users.forEach((user) => {
-      if (user._id == newMessageRecieved.sender._id) return;
+      if (user._id === newMessageRecieved.sender._id) return;
 
       socket.in(user._id).emit("message recieved", newMessageRecieved);
     });
   });
 
-  socket.off("setup", () => {
-    console.log("USER DISCONNECTED");
-    socket.leave(userData._id);
+  socket.on("disconnect", () => {
+    socket.leave(socket.user._id.toString());
   });
 });
